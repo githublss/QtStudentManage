@@ -25,28 +25,26 @@ student::student(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->pushButtonreturn,&QPushButton::clicked,this, &student::sendSignal);//返回主页
     setWindowTitle(QStringLiteral("设计者：s180201033李赛赛"));
+
     if(QSqlDatabase::contains("qt_sql_default_connection"))
         db = QSqlDatabase::database("qt_sql_default_connection");
     else{
-        db = QSqlDatabase::addDatabase("QMYSQL");
-        db.setHostName("127.0.0.1");
-        db.setDatabaseName("studentmanager");
-        db.setUserName("root");
-        db.setPassword("");
+//         db = QSqlDatabase::addDatabase("QMYSQL");
+//         db.setHostName("127.0.0.1");
+//         db.setDatabaseName("studentmanager");
+//         db.setUserName("root");
+//         db.setPassword("");
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("../info.db");
+        qDebug()<<"======";
     }
 
+//    db.open();
     if(!db.open())  //mysql的动态链接库库要手动下载到Qt的bin目录下，不然无法进行连接
     {
-        QMessageBox::warning(this, "error", db.lastError().text());
+        //QMessageBox::warning(this, "error", db.lastError().text());
     }
 
-//    QSqlQuery select;
-//    select.exec("select * from student;");
-//    select.next();
-//    qDebug()<< select.value(0).toString()
-//            <<select.value(1).toString()
-//            <<select.value(2).toString()
-//            <<select.value(3).toString();
     model = new QSqlTableModel(this);
     model->setTable("student");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit); //设置model的修改模式
@@ -57,7 +55,20 @@ student::student(QWidget *parent) :
     QString str = QString("name = '%1'").arg(username_qj);
 
     model->setFilter(str);  //只显示本学生的信息
-    model->select();
+    model->select();    //显示表
+
+    model->setHeaderData(0, Qt::Horizontal, QStringLiteral("学号"));
+    model->setHeaderData(1, Qt::Horizontal, QStringLiteral("姓名"));
+    model->setHeaderData(2, Qt::Horizontal, QStringLiteral("性别"));
+    model->setHeaderData(3, Qt::Horizontal, QStringLiteral("年龄"));
+    model->setHeaderData(4, Qt::Horizontal, QStringLiteral("专业"));
+    model->setHeaderData(5, Qt::Horizontal, QStringLiteral("班级"));
+    model->setHeaderData(6, Qt::Horizontal, QStringLiteral("地址"));
+    model->setHeaderData(7, Qt::Horizontal, QStringLiteral("电话"));
+    model->setHeaderData(8, Qt::Horizontal, QStringLiteral("职务"));
+    model->setHeaderData(9, Qt::Horizontal, QStringLiteral("密码"));
+    model->setHeaderData(10, Qt::Horizontal, QStringLiteral("奖赏"));
+    model->setHeaderData(11, Qt::Horizontal, QStringLiteral("惩罚"));
 }
 
 student::~student()
